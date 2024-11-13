@@ -70,37 +70,31 @@
         }
         .post .content {
             margin-top: 10px;
-            font-size: 18px; /* Increased font size for larger content */
-            line-height: 1.6; /* Better line spacing for readability */
+            font-size: 18px; /* Larger content font */
+            line-height: 1.6;
+            white-space: pre-wrap; /* Preserve whitespace and line breaks */
         }
         .post .date {
             font-size: 12px;
             color: #555;
         }
-        .post .edit-btn {
+        .post .edit-btn, .post .delete-btn {
             background-color: #4CAF50;
             color: white;
             padding: 5px 10px;
             cursor: pointer;
             border: none;
             border-radius: 4px;
+            margin-right: 10px;
         }
         .post .delete-btn {
             background-color: #f44336;
-            color: white;
-            padding: 5px 10px;
-            cursor: pointer;
-            border: none;
-            border-radius: 4px;
         }
         .post .delete-btn:hover {
             background-color: #d32f2f;
         }
         .post .edit-btn:hover {
             background-color: #45a049;
-        }
-        .post .edit-btn, .post .delete-btn {
-            margin-right: 10px;
         }
     </style>
 </head>
@@ -109,8 +103,6 @@
 <h2>Post Event Details for January</h2>
 
 <div class="container">
-
-    <!-- Form to add new post -->
     <div class="form-container">
         <h3>Post New Event Details</h3>
         <form id="postForm">
@@ -130,54 +122,42 @@
         </form>
     </div>
 
-    <!-- Displaying posts -->
     <div class="posts-container" id="posts"></div>
-
     <button onclick="goBack()">Go Back</button>
-
 </div>
 
 <script>
-    // Fetch the selected month from the URL query parameter
-    const params = new URLSearchParams(window.location.search);
-    const month = "January"; // Hardcoded for January page
+    const month = "January";
 
-    // Function to go back to the main month selection page
     function goBack() {
         window.location.href = "index.html";
     }
 
-    // Save post to localStorage
     function savePost(post) {
         let posts = JSON.parse(localStorage.getItem("posts")) || [];
         posts.push(post);
         localStorage.setItem("posts", JSON.stringify(posts));
     }
 
-    // Remove post from localStorage
     function removePost(index) {
         let posts = JSON.parse(localStorage.getItem("posts")) || [];
-        posts.splice(index, 1); // Remove the post at the specified index
+        posts.splice(index, 1);
         localStorage.setItem("posts", JSON.stringify(posts));
-        displayPosts(); // Refresh the displayed posts
+        displayPosts();
     }
 
-    // Edit post in localStorage
     function editPost(index) {
         let posts = JSON.parse(localStorage.getItem("posts")) || [];
         const post = posts[index];
         
-        // Populate form with existing post data for editing
         document.getElementById("day").value = post.day;
         document.getElementById("year").value = post.year;
         document.getElementById("title").value = post.title;
         document.getElementById("content").value = post.content;
-
-        // Remove the post being edited temporarily
+        
         removePost(index);
     }
 
-    // Display posts
     function displayPosts() {
         const posts = JSON.parse(localStorage.getItem("posts")) || [];
         const postsContainer = document.getElementById("posts");
@@ -189,7 +169,7 @@
                 postElement.classList.add("post");
 
                 postElement.innerHTML = `
-                    <div class="date">${post.day} January ${post.year}</div>
+                    <div class="date">${post.day} ${month} ${post.year}</div>
                     <div class="title">${post.title}</div>
                     <div class="content">${post.content}</div>
                     <button class="edit-btn" onclick="editPost(${index})">Edit</button>
@@ -201,7 +181,6 @@
         });
     }
 
-    // Form submit event
     document.getElementById("postForm").addEventListener("submit", function (event) {
         event.preventDefault();
 
@@ -217,9 +196,9 @@
         displayPosts();
     });
 
-    // Initial load of posts
     displayPosts();
 </script>
 
 </body>
 </html>
+
