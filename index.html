@@ -5,47 +5,88 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Monthly Form</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
-            color: #333;
-            margin: 20px;
-            padding: 10px;
-        }
-        h2 {
-            text-align: center;
-            font-size: 24px;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #fff;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .month-links {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-around;
-            padding: 20px 0;
-        }
-        .month-links a {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-            font-size: 16px;
-            margin: 5px;
-            display: block;
-            width: 100px;
-            text-align: center;
-        }
-        .month-links a:hover {
-            background-color: #45a049;
-        }
+    
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    color: #333;
+    margin: 0;
+    padding: 10px;
+}
+
+h2 {
+    text-align: center;
+    font-size: 24px;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Month Links Section */
+.month-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    padding: 20px 0;
+}
+
+.month-links a {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 16px;
+    margin: 5px;
+    display: block;
+    width: 100px;
+    text-align: center;
+}
+
+.month-links a:hover {
+    background-color: #45a049;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    body {
+        padding: 5px;
+    }
+    
+    h2 {
+        font-size: 20px;
+    }
+    
+    .container {
+        width: 100%;
+        padding: 15px;
+        margin: 0;
+        box-sizing: border-box;
+    }
+    
+    .month-links a {
+        font-size: 14px;
+        padding: 8px 10px;
+        width: 80px;
+    }
+}
+
+@media (max-width: 480px) {
+    .month-links a {
+        font-size: 12px;
+        padding: 6px 8px;
+        width: 70px;
+    }
+}
+
+        
     </style>
 </head>
 <body>
