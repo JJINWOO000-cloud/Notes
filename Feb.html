@@ -50,7 +50,6 @@
         .posts-container { 
             margin-top: 20px; 
         }
-        
         .post .title { 
             font-weight: bold; 
             font-size: 18px; 
@@ -81,13 +80,41 @@
             }
         }
 
+        /* Toggle mobile view styles */
+        body.mobile-view {
+            font-size: 16px;
+            padding: 5px;
+            margin: 5px;
+        }
+        body.mobile-view .container { 
+            max-width: 100%; 
+            padding: 10px;
+            border-radius: 0;
+        }
+        body.mobile-view h2 { 
+            font-size: 20px; 
+        }
+        body.mobile-view input, 
+        body.mobile-view textarea {
+            padding: 6px;
+            font-size: 14px;
+        }
+        body.mobile-view .form-container, 
+        body.mobile-view .post {
+            padding: 10px;
+        }
+        body.mobile-view button {
+            padding: 8px 16px;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
 <h2>Post Event Details for February</h2>
 
+<button id="toggleMobileView" onclick="toggleMobileView()">Toggle Mobile View</button>
+
 <div class="container">
-    <!-- Form to add or edit post -->
     <div class="form-container">
         <form id="postForm">
             <label for="day">Day:</label>
@@ -102,27 +129,28 @@
         </form>
     </div>
 
-    <!-- Displaying posts -->
     <div class="posts-container" id="posts"></div>
     <button onclick="window.location.href='index.html'">Go Back</button>
 </div>
 
 <script>
-    const month = "February"; // Hardcoded for January page
-    let editIndex = null; // Track which post to edit
+    const month = "February";
+    let editIndex = null;
 
-    // Save post to localStorage
+    function toggleMobileView() {
+        document.body.classList.toggle("mobile-view");
+    }
+
     function savePost(post) {
         let posts = JSON.parse(localStorage.getItem("posts")) || [];
         if (editIndex !== null) {
-            posts[editIndex] = post; // Edit existing post
+            posts[editIndex] = post;
         } else {
-            posts.push(post); // Add new post
+            posts.push(post);
         }
         localStorage.setItem("posts", JSON.stringify(posts));
     }
 
-    // Remove post from localStorage
     function removePost(index) {
         let posts = JSON.parse(localStorage.getItem("posts")) || [];
         posts.splice(index, 1);
@@ -130,23 +158,19 @@
         displayPosts();
     }
 
-    // Edit post
     function editPost(index) {
         const posts = JSON.parse(localStorage.getItem("posts")) || [];
         const post = posts[index];
 
-        // Set form fields with post data
         document.getElementById("day").value = post.day;
         document.getElementById("year").value = post.year;
         document.getElementById("title").value = post.title;
         document.getElementById("content").value = post.content;
 
-        // Set the edit index to the current post index
         editIndex = index;
-        document.querySelector("button[type='submit']").textContent = "Update Post"; // Change button text to "Update"
+        document.querySelector("button[type='submit']").textContent = "Update Post";
     }
 
-    // Display posts
     function displayPosts() {
         const posts = JSON.parse(localStorage.getItem("posts")) || [];
         const postsContainer = document.getElementById("posts");
@@ -156,7 +180,7 @@
             const postElement = document.createElement("div");
             postElement.classList.add("post");
             postElement.innerHTML = `
-                <div class="title">${post.day} January ${post.year} - ${post.title}</div>
+                <div class="title">${post.day} February ${post.year} - ${post.title}</div>
                 <div class="content">${post.content}</div>
                 <button onclick="removePost(${index})">Delete</button>
                 <button onclick="editPost(${index})">Edit</button>
@@ -165,7 +189,6 @@
         });
     }
 
-    // Form submit event
     document.getElementById("postForm").addEventListener("submit", function (event) {
         event.preventDefault();
 
@@ -180,15 +203,13 @@
         savePost(post);
         displayPosts();
 
-        // Reset form and editIndex
         document.getElementById("postForm").reset();
         editIndex = null;
-        document.querySelector("button[type='submit']").textContent = "Post"; // Reset button text
+        document.querySelector("button[type='submit']").textContent = "Post";
     });
 
-    // Initial load of posts
     displayPosts();
 </script>
-
 </body>
 </html>
+
