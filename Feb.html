@@ -6,43 +6,46 @@
     <style>
         body { 
             font-family: Arial, sans-serif; 
-            margin: 20px; 
-            padding: 10px; 
+            font-size: 16px;
+            margin: 5px; 
+            padding: 5px; 
             background-color: #f9f9f9; 
             color: #333; 
         }
         h2 { 
             text-align: center; 
-            font-size: 24px; 
+            font-size: 20px; 
         }
         .container { 
-            max-width: 800px; 
+            max-width: 100%; 
             margin: auto; 
-            padding: 20px; 
+            padding: 10px; 
             background: #fff; 
-            border-radius: 8px; 
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+            border-radius: 0; 
+            box-shadow: none;
         }
         .form-container, .post { 
             background: #f9f9f9; 
-            padding: 15px; 
+            padding: 10px; 
             margin-bottom: 20px; 
             border-radius: 8px; 
         }
         input, textarea { 
             width: 100%; 
-            padding: 8px; 
+            padding: 6px; 
             margin: 5px 0 15px; 
+            font-size: 14px;
             border: 1px solid #ccc; 
             border-radius: 4px; 
         }
         button { 
-            padding: 10px 20px; 
+            padding: 8px 16px; 
             background: #4CAF50; 
             color: white; 
             border: none; 
             border-radius: 4px; 
             cursor: pointer; 
+            font-size: 14px;
         }
         button:hover { 
             background-color: #45a049; 
@@ -61,58 +64,12 @@
         }
         .post button {
             margin-top: 10px;
-        }
-
-        /* Mobile responsiveness */
-        @media (max-width: 768px) {
-            body { padding: 5px; }
-            .container { 
-                padding: 10px; 
-                max-width: 100%;
-            }
-            h2 { font-size: 20px; }
-            .form-container, .post {
-                padding: 10px;
-            }
-            button {
-                font-size: 14px;
-                padding: 8px 16px;
-            }
-        }
-
-        /* Toggle mobile view styles */
-        body.mobile-view {
-            font-size: 16px;
-            padding: 5px;
-            margin: 5px;
-        }
-        body.mobile-view .container { 
-            max-width: 100%; 
-            padding: 10px;
-            border-radius: 0;
-        }
-        body.mobile-view h2 { 
-            font-size: 20px; 
-        }
-        body.mobile-view input, 
-        body.mobile-view textarea {
-            padding: 6px;
-            font-size: 14px;
-        }
-        body.mobile-view .form-container, 
-        body.mobile-view .post {
-            padding: 10px;
-        }
-        body.mobile-view button {
-            padding: 8px 16px;
             font-size: 14px;
         }
     </style>
 </head>
 <body>
 <h2>Post Event Details for February</h2>
-
-<button id="toggleMobileView" onclick="toggleMobileView()">Toggle Mobile View</button>
 
 <div class="container">
     <div class="form-container">
@@ -136,10 +93,6 @@
 <script>
     const month = "February";
     let editIndex = null;
-
-    function toggleMobileView() {
-        document.body.classList.toggle("mobile-view");
-    }
 
     function savePost(post) {
         let posts = JSON.parse(localStorage.getItem("posts")) || [];
@@ -212,4 +165,3 @@
 </script>
 </body>
 </html>
-
