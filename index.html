@@ -1,93 +1,119 @@
 <!DOCTYPE html>
-<link rel="manifest" href="manifest.json">
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Monthly Form</title>
+    <link rel="manifest" href="manifest.json">
     <style>
-    
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f9f9f9;
-    color: #333;
-    margin: 0;
-    padding: 10px;
-}
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+            margin: 0;
+            padding: 10px;
+        }
 
-h2 {
-    text-align: center;
-    font-size: 24px;
-}
+        h2 {
+            text-align: center;
+            font-size: 24px;
+        }
 
-.container {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
 
-/* Month Links Section */
-.month-links {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
-    padding: 20px 0;
-}
+        /* Month Links Section */
+        .month-links {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            padding: 20px 0;
+        }
 
-.month-links a {
-    padding: 10px 20px;
-    background-color: #4CAF50;
-    color: white;
-    text-decoration: none;
-    border-radius: 4px;
-    font-size: 16px;
-    margin: 5px;
-    display: block;
-    width: 100px;
-    text-align: center;
-}
+        .month-links a {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 16px;
+            margin: 5px;
+            display: block;
+            width: 100px;
+            text-align: center;
+        }
 
-.month-links a:hover {
-    background-color: #45a049;
-}
+        .month-links a:hover {
+            background-color: #45a049;
+        }
 
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-    body {
-        padding: 5px;
-    }
-    
-    h2 {
-        font-size: 20px;
-    }
-    
-    .container {
-        width: 100%;
-        padding: 15px;
-        margin: 0;
-        box-sizing: border-box;
-    }
-    
-    .month-links a {
-        font-size: 14px;
-        padding: 8px 10px;
-        width: 80px;
-    }
-}
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            body {
+                padding: 5px;
+            }
 
-@media (max-width: 480px) {
-    .month-links a {
-        font-size: 12px;
-        padding: 6px 8px;
-        width: 70px;
-    }
-}
+            h2 {
+                font-size: 20px;
+            }
 
-        
+            .container {
+                width: 100%;
+                padding: 15px;
+                margin: 0;
+                box-sizing: border-box;
+            }
+
+            .month-links a {
+                font-size: 14px;
+                padding: 8px 10px;
+                width: 80px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .month-links a {
+                font-size: 12px;
+                padding: 6px 8px;
+                width: 70px;
+            }
+        }
+
+        /* App Button or Icon Style */
+        .app-button, .app-icon {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .app-button {
+            padding: 15px 25px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .app-button:hover {
+            background-color: #45a049;
+        }
+
+        .app-icon img {
+            width: 100px;
+            height: 100px;
+            border-radius: 15px;
+        }
+
     </style>
 </head>
 <body>
@@ -96,20 +122,43 @@ h2 {
 
 <div class="container">
     <div class="month-links">
-        <a href="Jan.html">January</a>
-        <a href="Feb.html">February</a>
-        <a href="Mar.html">March</a>
-        <a href="Apr.html">April</a>
-        <a href="May.html">May</a>
-        <a href="Jun.html">June</a>
-        <a href="Jul.html">July</a>
-        <a href="Aug.html">August</a>
-        <a href="Sep.html">September</a>
-        <a href="Oct.html">October</a>
-        <a href="Nov.html">November</a>
-        <a href="Dec.html">December</a>
+        <a href="Jan.html" class="app-button">January</a>
+        <a href="Feb.html" class="app-button">February</a>
+        <a href="Mar.html" class="app-button">March</a>
+        <a href="Apr.html" class="app-button">April</a>
+        <a href="May.html" class="app-button">May</a>
+        <a href="Jun.html" class="app-button">June</a>
+        <a href="Jul.html" class="app-button">July</a>
+        <a href="Aug.html" class="app-button">August</a>
+        <a href="Sep.html" class="app-button">September</a>
+        <a href="Oct.html" class="app-button">October</a>
+        <a href="Nov.html" class="app-button">November</a>
+        <a href="Dec.html" class="app-button">December</a>
     </div>
+
+    <!-- Or using icons for each month (uncomment below if preferred) -->
+    <!-- 
+    <a href="Jan.html" class="app-icon"><img src="jan-icon.png" alt="January"></a>
+    <a href="Feb.html" class="app-icon"><img src="feb-icon.png" alt="February"></a>
+    <a href="Mar.html" class="app-icon"><img src="mar-icon.png" alt="March"></a>
+    <a href="Apr.html" class="app-icon"><img src="apr-icon.png" alt="April"></a>
+    <a href="May.html" class="app-icon"><img src="may-icon.png" alt="May"></a>
+    <a href="Jun.html" class="app-icon"><img src="jun-icon.png" alt="June"></a>
+    <a href="Jul.html" class="app-icon"><img src="jul-icon.png" alt="July"></a>
+    <a href="Aug.html" class="app-icon"><img src="aug-icon.png" alt="August"></a>
+    <a href="Sep.html" class="app-icon"><img src="sep-icon.png" alt="September"></a>
+    <a href="Oct.html" class="app-icon"><img src="oct-icon.png" alt="October"></a>
+    <a href="Nov.html" class="app-icon"><img src="nov-icon.png" alt="November"></a>
+    <a href="Dec.html" class="app-icon"><img src="dec-icon.png" alt="December"></a>
+    -->
 </div>
+
+<script>
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/service-worker.js')
+            .then(() => console.log("Service Worker Registered"));
+    }
+</script>
 
 </body>
 </html>
