@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workout Planner</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 10px;
+            line-height: 1.6;
+        }
+        .hidden { display: none; }
+        .exercise-list, .workout-display { margin-top: 20px; }
+        .exercise { margin-bottom: 10px; }
+        button { margin-top: 10px; padding: 10px; width: 100%; }
+        select, input { width: 100%; padding: 10px; margin-top: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Create Workout Routine</h1>
+
+    <div id="routine-creation">
+        <label for="routineName">Routine Name:</label>
+        <input type="text" id="routineName" placeholder="Enter routine name" required>
+
+        <h2>Add Exercise</h2>
+        <label for="exerciseName">Exercise Name:</label>
+        <input type="text" id="exerciseName" placeholder="Enter exercise name" required>
+
+        <label>Select Primary Muscle:</label>
+        <select id="primaryMuscle">
+            <option>Chest</option>
+            <option>Back</option>
+            <option>Shoulders</option>
+            <option>Legs</option>
+            <option>Biceps</option>
+            <option>Triceps</option>
+        </select>
+
+        <label>Add Secondary Muscle:</label>
+        <select id="secondaryMuscle">
+            <option>Chest</option>
+            <option>Back</option>
+            <option>Shoulders</option>
+            <option>Legs</option>
+            <option>Biceps</option>
+            <option>Triceps</option>
+        </select>
+
+        <label>Exercise Type:</label>
+        <select id="exerciseType">
+            <option value="sets">Sets</option>
+            <option value="time">Time</option>
+        </select>
+
+        <div id="setsInput">
+            <label for="sets">Sets:</label>
+            <input type="number" id="sets" min="1" max="10">
+            <label for="reps">Reps:</label>
+            <input type="number" id="reps" min="1">
+        </div>
+
+        <div id="timeInput" class="hidden">
+            <label for="timer">Timer (mm:ss):</label>
+            <input type="text" id="timer" placeholder="00:10 (min 10s, max 5m)">
+        </div>
+
+        <label>Rest Time Between Exercises:</label>
+        <input type="text" id="restTime" placeholder="00:30" value="00:30">
+
+        <button onclick="addExercise()">Add Exercise</button>
+
+        <div class="exercise-list">
+            <h3>Exercises:</h3>
+            <ul id="exerciseList"></ul>
+        </div>
+
+        <button onclick="startWorkout()">Start Workout Routine</button>
+    </div>
+
+    <div id="workout-display" class="workout-display hidden">
+        <h2>Workout Routine: <span id="workoutName"></span></h2>
+        <h3>Current Exercise</h3>
+        <p id="currentExercise"></p>
+        <p id="setCount"></p>
+        <p id="muscleGroups"></p>
+        <p id="restCountdown" class="hidden"></p>
+        <button id="startExerciseButton" onclick="startExercise()">Start Exercise</button>
+        <button id="nextExerciseButton" class="hidden" onclick="nextExercise()">Next Exercise / Set</button>
+        <p>Routine Timer: <span id="routineTimer">00:00</span></p>
+        <button onclick="endWorkout()">End Workout Early</button>
+    </div>
+
+    <script>
+        let workoutData = [];
+        let currentExerciseIndex = 0;
+        let currentSet = 1;
+        let workoutInterval;
+        let routineStartTime;
+        let restInterval;
+
+        // Toggle input visibility based on exercise type
+        document.getElementById("exerciseType").addEventListener("change", function() {
+            const type = this.value;
+            document.getElementById("setsInput").classList.toggle("hidden", type !== "sets");
+            document.getElementById("timeInput").classList.toggle("hidden", type !== "time");
+        });
+
+        // Validate input fields
+        function validateInput() {
+            const name = document.getElementById("exerciseName").value;
+            if (!name) {
+                alert("Please enter an exercise name.");
+                return false;
+            }
+
+            return true;
+        }
+
+        // Function to add exercise to workout plan
+        function addExercise() {
+            if (!validateInput()) return;
+
+            const name = document.getElementById("exerciseName").value;
+            const primaryMuscle = document.getElementById("primaryMuscle").value;
+            const secondaryMuscle = document.getElementById("secondaryMuscle").value;
+            const type = document.getElementById("exerciseType").value;
+            const restTime = document.getElementById("restTime").value;
+
+            let exercise = { name, primaryMuscle, secondaryMuscle, type, restTime };
+
+            if (type === "sets") {
+                exercise.sets = parseInt(document.getElementById("sets").value);
+                exercise.reps = parseInt(document.getElementById("reps").value);
+            } else {
+                exercise.time = document.getElementById("timer").value;
+            }
+
+            workoutData.push(exercise);
+            displayExercises();
+        }
+
+        // Display added exercises
+        function displayExercises() {
+            const list = document.getElementById("exerciseList");
+            list.innerHTML = "";
+            workoutData.forEach((exercise, index) => {
+                const li = document.createElement("li");
+                li.innerText = `${exercise.name} - Primary: ${exercise.primaryMuscle}, Secondary: ${exercise.secondaryMuscle} - ${exercise.type === "sets" ? exercise.sets + " sets x " + exercise.reps + " reps" : "Time: " + exercise.time} - Rest: ${exercise.restTime}`;
+                list.appendChild(li);
+            });
+        }
+
+        // Start the workout
+        function startWorkout() {
+            if (!workoutData.length) {
+                alert("Please add at least one exercise.");
+                return;
+            }
+
+            document.getElementById("routine-creation").classList.add("hidden");
+            document.getElementById("workout-display").classList.remove("hidden");
+
+            document.getElementById("workoutName").innerText = document.getElementById("routineName").value;
+            routineStartTime = Date.now();
+            displayCurrentExercise();
+            startRoutineTimer();
+        }
+
+        // Display current exercise details
+        function displayCurrentExercise() {
+            const exercise = workoutData[currentExerciseIndex];
+            document.getElementById("currentExercise").innerText = `${exercise.name}`;
+            document.getElementById("setCount").innerText = exercise.type === "sets" ? `Set ${currentSet} of ${exercise.sets}` : `Time: ${exercise.time}`;
+            document.getElementById("muscleGroups").innerText = `Primary Muscle: ${exercise.primaryMuscle}, Secondary Muscle: ${exercise.secondaryMuscle}`;
+            document.getElementById("startExerciseButton").classList.toggle("hidden", exercise.type === "sets");
+            document.getElementById("nextExerciseButton").classList.add("hidden");
+        }
+
+        // Start the exercise (time-based or sets)
+        function startExercise() {
+            const exercise = workoutData[currentExerciseIndex];
+            if (exercise.type === "time") {
+                let [minutes, seconds] = exercise.time.split(":").map(Number);
+                let duration = minutes * 60 + seconds;
+                let countdown = setInterval(() => {
+                    if (duration <= 0) {
+                        clearInterval(countdown);
+                        startRest();
+                    } else {
+                        duration--;
+                        document.getElementById("setCount").innerText = `Time Left: ${String(Math.floor(duration / 60)).padStart(2, "0")}:${String(duration % 60).padStart(2, "0")}`;
+                    }
+                }, 1000);
+            } else {
+                document.getElementById("nextExerciseButton").classList.remove("hidden");
+            }
+        }
+
+        // Move to the next set or exercise
+        function nextExercise() {
+            const exercise = workoutData[currentExerciseIndex];
+            if (exercise.type === "sets" && currentSet < exercise.sets) {
+                currentSet++;
+                displayCurrentExercise();
+            } else {
+                currentSet = 1;
+                currentExerciseIndex++;
+                if (currentExerciseIndex < workoutData.length) {
+                    startRest();
+                } else {
+                    endWorkout();
+                }
+            }
+        }
+
+        // Start rest period after exercise
+        function startRest() {
+            const exercise = workoutData[currentExerciseIndex];
+            clearInterval(restInterval);
+            document.getElementById("restCountdown").classList.remove("hidden");
+            let [minutes, seconds] = exercise.restTime.split(":").map(Number);
+            let duration = minutes * 60 + seconds;
+
+            restInterval = setInterval(() => {
+                if (duration <= 0) {
+                    clearInterval(restInterval);
+                    nextExercise();
+                } else {
+                    duration--;
+                    document.getElementById("restCountdown").innerText = `Rest Time: ${String(Math.floor(duration / 60)).padStart(2, "0")}:${String(duration % 60).padStart(2, "0")}`;
+                }
+            }, 1000);
+        }
+
+        // End the workout early
+        function endWorkout() {
+            clearInterval(workoutInterval);
+            document.getElementById("workout-display").classList.add("hidden");
+            alert("Workout ended!");
+        }
+
+        // Routine timer update
+        function startRoutineTimer() {
+            workoutInterval = setInterval(() => {
+                const elapsed = Date.now() - routineStartTime;
+                document.getElementById("routineTimer").innerText = `${String(Math.floor(elapsed / 60000)).padStart(2, "0")}:${String(Math.floor((elapsed % 60000) / 1000)).padStart(2, "0")}`;
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
