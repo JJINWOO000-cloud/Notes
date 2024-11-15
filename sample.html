@@ -1,216 +1,171 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Workout Routine</title>
-  <style>
-    /* Basic Mobile-Friendly Styles */
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      background-color: #f7f7f7;
-    }
-    .container {
-      max-width: 400px;
-      width: 100%;
-      padding: 10px;
-    }
-    h1, h2, h3 {
-      color: #333;
-      text-align: center;
-    }
-    label {
-      display: block;
-      margin-top: 10px;
-      font-weight: bold;
-    }
-    input[type="text"], input[type="number"], select {
-      width: 100%;
-      padding: 8px;
-      margin-top: 5px;
-      margin-bottom: 10px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-    button {
-      width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-      border: none;
-      border-radius: 5px;
-      color: white;
-      background-color: #4CAF50;
-      font-size: 16px;
-    }
-    .button-group {
-      display: flex;
-      gap: 10px;
-      justify-content: space-between;
-    }
-    .exercise-list {
-      list-style: none;
-      padding: 0;
-    }
-    .exercise-item {
-      background: #e0e0e0;
-      padding: 10px;
-      margin-bottom: 5px;
-      border-radius: 5px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workout Planner</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .hidden { display: none; }
+        .exercise-list, .workout-display { margin-top: 20px; }
+        .exercise { margin-bottom: 10px; }
+        button { margin-top: 10px; }
+    </style>
 </head>
 <body>
+    <h1>Create Workout Routine</h1>
 
-<div class="container">
-  <h1>Create Workout Routine</h1>
+    <div id="routine-creation">
+        <label for="routineName">Routine Name:</label>
+        <input type="text" id="routineName" placeholder="Enter routine name" required>
 
-  <!-- Routine Name -->
-  <label for="routineName">Routine Name</label>
-  <input type="text" id="routineName" placeholder="Enter routine name">
+        <h2>Add Exercise</h2>
+        <label for="exerciseName">Exercise Name:</label>
+        <input type="text" id="exerciseName" placeholder="Enter exercise name" required>
 
-  <!-- Exercise Section -->
-  <h2>Add Exercise</h2>
-  <label for="exerciseName">Exercise Name</label>
-  <input type="text" id="exerciseName" placeholder="Enter exercise name">
+        <label for="muscleGroup">Select Muscle:</label>
+        <select id="muscleGroup">
+            <option>Chest</option>
+            <option>Back</option>
+            <option>Shoulders</option>
+            <option>Legs</option>
+            <option>Biceps</option>
+            <option>Triceps</option>
+        </select>
 
-  <!-- Muscle Selection -->
-  <label>Muscles Worked</label>
-  <div class="button-group">
-    <button type="button" onclick="addMuscle('Chest')">Chest</button>
-    <button type="button" onclick="addMuscle('Back')">Back</button>
-    <button type="button" onclick="addMuscle('Shoulders')">Shoulders</button>
-    <button type="button" onclick="addMuscle('Legs')">Legs</button>
-    <button type="button" onclick="addMuscle('Biceps')">Biceps</button>
-    <button type="button" onclick="addMuscle('Triceps')">Triceps</button>
-  </div>
-  <p><strong>Selected Muscles:</strong> <span id="selectedMuscles">None</span></p>
+        <label>Exercise Type:</label>
+        <select id="exerciseType">
+            <option value="sets">Sets</option>
+            <option value="time">Time</option>
+        </select>
 
-  <!-- Sets and Reps or Time -->
-  <label for="sets">Number of Sets</label>
-  <input type="number" id="sets" min="1" max="10" value="1">
+        <div id="setsInput">
+            <label for="sets">Sets:</label>
+            <input type="number" id="sets" min="1" max="10">
+            <label for="reps">Reps:</label>
+            <input type="number" id="reps" min="1">
+        </div>
 
-  <label>Reps or Time</label>
-  <select id="repsOrTime" onchange="toggleRepsTimeInput()">
-    <option value="reps">Reps</option>
-    <option value="time">Time</option>
-  </select>
+        <div id="timeInput" class="hidden">
+            <label for="timer">Timer (mm:ss):</label>
+            <input type="text" id="timer" placeholder="00:10 (min 10s, max 5m)">
+        </div>
 
-  <div id="repsInput" style="display: block;">
-    <label for="reps">Reps</label>
-    <input type="number" id="reps" min="1" max="100">
-  </div>
+        <label>Rest Time Between Exercises:</label>
+        <input type="text" id="restTime" placeholder="00:30" value="00:30">
 
-  <div id="timeInput" style="display: none;">
-    <label for="time">Time (MM:SS)</label>
-    <input type="text" id="time" placeholder="00:30">
-  </div>
+        <button onclick="addExercise()">Add Exercise</button>
 
-  <!-- Rest Time -->
-  <label>Rest Between Sets</label>
-  <select id="rest" onchange="toggleRestInput()">
-    <option value="no">No</option>
-    <option value="yes">Yes</option>
-  </select>
-  <div id="restTimeInput" style="display: none;">
-    <label for="restTime">Rest Time (MM:SS)</label>
-    <input type="text" id="restTime" placeholder="00:30">
-  </div>
+        <div class="exercise-list">
+            <h3>Exercises:</h3>
+            <ul id="exerciseList"></ul>
+        </div>
 
-  <!-- Add Exercise Button -->
-  <button onclick="addExercise()">Add Exercise</button>
+        <button onclick="startWorkout()">Start Workout Routine</button>
+    </div>
 
-  <h2>Exercises</h2>
-  <ul class="exercise-list" id="exerciseList"></ul>
+    <div id="workout-display" class="workout-display hidden">
+        <h2>Workout Routine: <span id="workoutName"></span></h2>
+        <h3>Current Exercise</h3>
+        <p id="currentExercise"></p>
+        <button onclick="nextExercise()">Next Exercise</button>
+        <p>Routine Timer: <span id="routineTimer">00:00</span></p>
+        <button onclick="endWorkout()">End Workout Early</button>
+    </div>
 
-  <button onclick="saveWorkout()">Save Workout Routine</button>
+    <script>
+        let exercises = [];
+        let currentExerciseIndex = 0;
+        let workoutInterval;
+        let routineStartTime;
 
-  <h2>Play Routine</h2>
-  <button onclick="startWorkout()">Start Workout</button>
-</div>
+        document.getElementById("exerciseType").addEventListener("change", function() {
+            const type = this.value;
+            document.getElementById("setsInput").classList.toggle("hidden", type !== "sets");
+            document.getElementById("timeInput").classList.toggle("hidden", type !== "time");
+        });
 
-<script>
-  let muscles = [];
-  let exercises = [];
+        function addExercise() {
+            const name = document.getElementById("exerciseName").value;
+            const muscle = document.getElementById("muscleGroup").value;
+            const type = document.getElementById("exerciseType").value;
+            const restTime = document.getElementById("restTime").value;
 
-  function addMuscle(muscle) {
-    if (!muscles.includes(muscle)) {
-      muscles.push(muscle);
-      document.getElementById("selectedMuscles").innerText = muscles.join(", ");
-    }
-  }
+            let exercise = { name, muscle, type, restTime };
 
-  function toggleRepsTimeInput() {
-    const value = document.getElementById("repsOrTime").value;
-    document.getElementById("repsInput").style.display = value === "reps" ? "block" : "none";
-    document.getElementById("timeInput").style.display = value === "time" ? "block" : "none";
-  }
+            if (type === "sets") {
+                exercise.sets = document.getElementById("sets").value;
+                exercise.reps = document.getElementById("reps").value;
+            } else {
+                exercise.time = document.getElementById("timer").value;
+            }
 
-  function toggleRestInput() {
-    const value = document.getElementById("rest").value;
-    document.getElementById("restTimeInput").style.display = value === "yes" ? "block" : "none";
-  }
+            exercises.push(exercise);
+            displayExercises();
+        }
 
-  function addExercise() {
-    const exerciseName = document.getElementById("exerciseName").value;
-    const sets = document.getElementById("sets").value;
-    const repsOrTime = document.getElementById("repsOrTime").value === "reps"
-      ? `${document.getElementById("reps").value} reps`
-      : document.getElementById("time").value;
-    const restTime = document.getElementById("rest").value === "yes" ? document.getElementById("restTime").value : "No Rest";
+        function displayExercises() {
+            const list = document.getElementById("exerciseList");
+            list.innerHTML = "";
+            exercises.forEach((exercise, index) => {
+                const li = document.createElement("li");
+                li.innerText = `${exercise.name} (${exercise.muscle}) - ${exercise.type === "sets" ? exercise.sets + " sets x " + exercise.reps + " reps" : "Time: " + exercise.time} - Rest: ${exercise.restTime}`;
+                list.appendChild(li);
+            });
+        }
 
-    const exercise = {
-      name: exerciseName,
-      sets,
-      repsOrTime,
-      muscles: muscles.join(", "),
-      restTime
-    };
+        function startWorkout() {
+            if (!exercises.length) {
+                alert("Please add at least one exercise.");
+                return;
+            }
 
-    exercises.push(exercise);
-    displayExercises();
-    
-    // Reset input fields for the next exercise
-    document.getElementById("exerciseName").value = '';
-    document.getElementById("sets").value = 1;
-    document.getElementById("reps").value = '';
-    document.getElementById("time").value = '';
-    muscles = [];
-    document.getElementById("selectedMuscles").innerText = 'None';
-  }
+            document.getElementById("routine-creation").classList.add("hidden");
+            document.getElementById("workout-display").classList.remove("hidden");
 
-  function displayExercises() {
-    const exerciseList = document.getElementById("exerciseList");
-    exerciseList.innerHTML = '';
-    exercises.forEach((exercise, index) => {
-      exerciseList.innerHTML += `
-        <li class="exercise-item">
-          <strong>${exercise.name}</strong> - Sets: ${exercise.sets}, ${exercise.repsOrTime}, Muscles: ${exercise.muscles}, Rest: ${exercise.restTime}
-          <button onclick="deleteExercise(${index})">Delete</button>
-        </li>
-      `;
-    });
-  }
+            document.getElementById("workoutName").innerText = document.getElementById("routineName").value;
+            routineStartTime = Date.now();
+            displayCurrentExercise();
+            startRoutineTimer();
+        }
 
-  function deleteExercise(index) {
-    exercises.splice(index, 1);
-    displayExercises();
-  }
+        function displayCurrentExercise() {
+            if (currentExerciseIndex >= exercises.length) {
+                endWorkout();
+                return;
+            }
 
-  function saveWorkout() {
-    // Code to save workout data (you can use Blob API as discussed previously)
-    alert("Workout routine saved!");
-  }
+            const exercise = exercises[currentExerciseIndex];
+            document.getElementById("currentExercise").innerText = `${exercise.name} (${exercise.muscle}) - ${exercise.type === "sets" ? exercise.sets + " sets x " + exercise.reps + " reps" : "Time: " + exercise.time}`;
+        }
 
-  function startWorkout() {
-    alert("Starting workout routine...");
-    // Implement workout play functionality here, including tracking sets, beeps, and rest time
-  }
-</script>
+        function nextExercise() {
+            if (currentExerciseIndex < exercises.length - 1) {
+                currentExerciseIndex++;
+                displayCurrentExercise();
+            } else {
+                endWorkout();
+            }
+        }
 
+        function startRoutineTimer() {
+            workoutInterval = setInterval(() => {
+                const elapsed = Date.now() - routineStartTime;
+                const minutes = Math.floor(elapsed / 60000).toString().padStart(2, "0");
+                const seconds = Math.floor((elapsed % 60000) / 1000).toString().padStart(2, "0");
+                document.getElementById("routineTimer").innerText = `${minutes}:${seconds}`;
+            }, 1000);
+        }
+
+        function endWorkout() {
+            clearInterval(workoutInterval);
+            alert("Workout completed!");
+            document.getElementById("workout-display").classList.add("hidden");
+            document.getElementById("routine-creation").classList.remove("hidden");
+            currentExerciseIndex = 0;
+            exercises = [];
+            displayExercises();
+        }
+    </script>
 </body>
 </html>
