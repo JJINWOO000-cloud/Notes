@@ -95,19 +95,21 @@
     </div>
 
     <script>
-        let exercises = [];
-        let currentExerciseIndex = 0;
-        let currentSet = 1;
+        let workoutData = []; // Array to hold all exercises
+        let currentExerciseIndex = 0; // Track the current exercise index
+        let currentSet = 1; // Track the current set index
         let workoutInterval;
         let routineStartTime;
         let restInterval;
 
+        // Update input visibility based on exercise type
         document.getElementById("exerciseType").addEventListener("change", function() {
             const type = this.value;
             document.getElementById("setsInput").classList.toggle("hidden", type !== "sets");
             document.getElementById("timeInput").classList.toggle("hidden", type !== "time");
         });
 
+        // Function to add an exercise to the workout plan
         function addExercise() {
             const name = document.getElementById("exerciseName").value;
             const primaryMuscle = document.getElementById("primaryMuscle").value;
@@ -118,28 +120,30 @@
             let exercise = { name, primaryMuscle, secondaryMuscle, type, restTime };
 
             if (type === "sets") {
-                exercise.sets = document.getElementById("sets").value;
-                exercise.reps = document.getElementById("reps").value;
+                exercise.sets = parseInt(document.getElementById("sets").value);
+                exercise.reps = parseInt(document.getElementById("reps").value);
             } else {
                 exercise.time = document.getElementById("timer").value;
             }
 
-            exercises.push(exercise);
+            workoutData.push(exercise);
             displayExercises();
         }
 
+        // Display the list of exercises added
         function displayExercises() {
             const list = document.getElementById("exerciseList");
             list.innerHTML = "";
-            exercises.forEach((exercise, index) => {
+            workoutData.forEach((exercise, index) => {
                 const li = document.createElement("li");
                 li.innerText = `${exercise.name} - Primary: ${exercise.primaryMuscle}, Secondary: ${exercise.secondaryMuscle} - ${exercise.type === "sets" ? exercise.sets + " sets x " + exercise.reps + " reps" : "Time: " + exercise.time} - Rest: ${exercise.restTime}`;
                 list.appendChild(li);
             });
         }
 
+        // Start the workout routine
         function startWorkout() {
-            if (!exercises.length) {
+            if (!workoutData.length) {
                 alert("Please add at least one exercise.");
                 return;
             }
@@ -153,8 +157,9 @@
             startRoutineTimer();
         }
 
+        // Display the current exercise
         function displayCurrentExercise() {
-            const exercise = exercises[currentExerciseIndex];
+            const exercise = workoutData[currentExerciseIndex];
             document.getElementById("currentExercise").innerText = `${exercise.name}`;
             document.getElementById("setCount").innerText = exercise.type === "sets" ? `Set ${currentSet} of ${exercise.sets}` : `Time: ${exercise.time}`;
             document.getElementById("muscleGroups").innerText = `Primary Muscle: ${exercise.primaryMuscle}, Secondary Muscle: ${exercise.secondaryMuscle}`;
@@ -162,8 +167,9 @@
             document.getElementById("nextExerciseButton").classList.add("hidden");
         }
 
+        // Start the current exercise (time-based or sets)
         function startExercise() {
-            const exercise = exercises[currentExerciseIndex];
+            const exercise = workoutData[currentExerciseIndex];
             if (exercise.type === "time") {
                 let [minutes, seconds] = exercise.time.split(":").map(Number);
                 let duration = minutes * 60 + seconds;
@@ -181,14 +187,16 @@
             }
         }
 
+        // Move to the next set or exercise
         function nextExercise() {
-            if (currentSet < exercises[currentExerciseIndex].sets) {
+            const exercise = workoutData[currentExerciseIndex];
+            if (exercise.type === "sets" && currentSet < exercise.sets) {
                 currentSet++;
                 displayCurrentExercise();
             } else {
-                currentSet = 1;
+                currentSet = 1; // Reset set to 1
                 currentExerciseIndex++;
-                if (currentExerciseIndex < exercises.length) {
+                if (currentExerciseIndex < workoutData.length) {
                     startRest();
                 } else {
                     endWorkout();
@@ -196,8 +204,9 @@
             }
         }
 
+        // Start the rest time after completing a set or time exercise
         function startRest() {
-            const restTime = exercises[currentExerciseIndex].restTime.split(":");
+            const restTime = workoutData[currentExerciseIndex].restTime.split(":");
             let restDuration = parseInt(restTime[0]) * 60 + parseInt(restTime[1]);
 
             document.getElementById("restCountdown").classList.remove("hidden");
@@ -205,7 +214,6 @@
             restInterval = setInterval(() => {
                 if (restDuration <= 0) {
                     clearInterval(restInterval);
-                    document.getElementById("restCountdown").classList.add("hidden");
                     displayCurrentExercise();
                 } else {
                     restDuration--;
@@ -214,6 +222,7 @@
             }, 1000);
         }
 
+        // Start the workout routine timer
         function startRoutineTimer() {
             workoutInterval = setInterval(() => {
                 const elapsedTime = Math.floor((Date.now() - routineStartTime) / 1000);
@@ -221,12 +230,13 @@
             }, 1000);
         }
 
+        // End the workout early
         function endWorkout() {
             clearInterval(workoutInterval);
             clearInterval(restInterval);
-            document.getElementById("workout-display").classList.add("hidden");
+            alert("Workout Completed!");
             document.getElementById("routine-creation").classList.remove("hidden");
-            alert("Workout complete!");
+            document.getElementById("workout-display").classList.add("hidden");
         }
     </script>
 </body>
