@@ -209,4 +209,25 @@
                     displayCurrentExercise();
                 } else {
                     restDuration--;
-                    document.getElementById("restCountdown").innerText = `Resting for: ${
+                    document.getElementById("restCountdown").innerText = `Resting for: ${String(Math.floor(restDuration / 60)).padStart(2, "0")}:${String(restDuration % 60).padStart(2, "0")}`;
+                }
+            }, 1000);
+        }
+
+        function startRoutineTimer() {
+            workoutInterval = setInterval(() => {
+                const elapsedTime = Math.floor((Date.now() - routineStartTime) / 1000);
+                document.getElementById("routineTimer").innerText = `${String(Math.floor(elapsedTime / 60)).padStart(2, "0")}:${String(elapsedTime % 60).padStart(2, "0")}`;
+            }, 1000);
+        }
+
+        function endWorkout() {
+            clearInterval(workoutInterval);
+            clearInterval(restInterval);
+            document.getElementById("workout-display").classList.add("hidden");
+            document.getElementById("routine-creation").classList.remove("hidden");
+            alert("Workout complete!");
+        }
+    </script>
+</body>
+</html>
