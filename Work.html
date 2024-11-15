@@ -17,6 +17,7 @@
         .exercise { margin-bottom: 10px; }
         button { margin-top: 10px; padding: 10px; width: 100%; }
         select, input { width: 100%; padding: 10px; margin-top: 5px; }
+        #secondaryMuscles { margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -41,7 +42,7 @@
         </select>
 
         <label>Add Secondary Muscle:</label>
-        <select id="secondaryMuscle">
+        <select id="secondaryMuscles">
             <option>Chest</option>
             <option>Back</option>
             <option>Shoulders</option>
@@ -49,6 +50,7 @@
             <option>Biceps</option>
             <option>Triceps</option>
         </select>
+        <button id="addAnotherMuscle">Add another muscle</button>
 
         <label>Exercise Type:</label>
         <select id="exerciseType">
@@ -90,10 +92,11 @@
         <p id="restCountdown" class="hidden"></p>
         <button id="startExerciseButton" onclick="startExercise()">Start Exercise</button>
         <button id="nextExerciseButton" class="hidden" onclick="nextExercise()">Next Exercise / Set</button>
+        <button id="finishWorkoutButton" class="hidden" onclick="finishWorkout()">Finish Workout</button>
         <p>Routine Timer: <span id="routineTimer">00:00</span></p>
         <button onclick="endWorkout()">End Workout Early</button>
     </div>
 
-    <script src = "Work.js"></script>
+    <script src="Work.js"></script>
 </body>
 </html>
