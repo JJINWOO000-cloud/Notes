@@ -81,12 +81,12 @@
   <!-- Muscle Selection -->
   <label>Muscles Worked</label>
   <div class="button-group">
-    <button onclick="addMuscle('Chest')">Chest</button>
-    <button onclick="addMuscle('Back')">Back</button>
-    <button onclick="addMuscle('Shoulders')">Shoulders</button>
-    <button onclick="addMuscle('Legs')">Legs</button>
-    <button onclick="addMuscle('Biceps')">Biceps</button>
-    <button onclick="addMuscle('Triceps')">Triceps</button>
+    <button type="button" onclick="addMuscle('Chest')">Chest</button>
+    <button type="button" onclick="addMuscle('Back')">Back</button>
+    <button type="button" onclick="addMuscle('Shoulders')">Shoulders</button>
+    <button type="button" onclick="addMuscle('Legs')">Legs</button>
+    <button type="button" onclick="addMuscle('Biceps')">Biceps</button>
+    <button type="button" onclick="addMuscle('Triceps')">Triceps</button>
   </div>
   <p><strong>Selected Muscles:</strong> <span id="selectedMuscles">None</span></p>
 
@@ -121,7 +121,8 @@
     <input type="text" id="restTime" placeholder="00:30">
   </div>
 
-  <button onclick="addExercise()">Save Exercise</button>
+  <!-- Add Exercise Button -->
+  <button onclick="addExercise()">Add Exercise</button>
 
   <h2>Exercises</h2>
   <ul class="exercise-list" id="exerciseList"></ul>
@@ -172,6 +173,14 @@
 
     exercises.push(exercise);
     displayExercises();
+    
+    // Reset input fields for the next exercise
+    document.getElementById("exerciseName").value = '';
+    document.getElementById("sets").value = 1;
+    document.getElementById("reps").value = '';
+    document.getElementById("time").value = '';
+    muscles = [];
+    document.getElementById("selectedMuscles").innerText = 'None';
   }
 
   function displayExercises() {
