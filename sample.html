@@ -5,11 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Workout Planner</title>
     <style>
-        body { font-family: Arial, sans-serif; }
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 10px;
+            line-height: 1.6;
+        }
         .hidden { display: none; }
         .exercise-list, .workout-display { margin-top: 20px; }
         .exercise { margin-bottom: 10px; }
-        button { margin-top: 10px; }
+        button { margin-top: 10px; padding: 10px; width: 100%; }
+        select, input { width: 100%; padding: 10px; margin-top: 5px; }
     </style>
 </head>
 <body>
@@ -23,8 +30,18 @@
         <label for="exerciseName">Exercise Name:</label>
         <input type="text" id="exerciseName" placeholder="Enter exercise name" required>
 
-        <label for="muscleGroup">Select Muscle:</label>
-        <select id="muscleGroup">
+        <label>Select Primary Muscle:</label>
+        <select id="primaryMuscle">
+            <option>Chest</option>
+            <option>Back</option>
+            <option>Shoulders</option>
+            <option>Legs</option>
+            <option>Biceps</option>
+            <option>Triceps</option>
+        </select>
+
+        <label>Add Secondary Muscle:</label>
+        <select id="secondaryMuscle">
             <option>Chest</option>
             <option>Back</option>
             <option>Shoulders</option>
@@ -68,7 +85,11 @@
         <h2>Workout Routine: <span id="workoutName"></span></h2>
         <h3>Current Exercise</h3>
         <p id="currentExercise"></p>
-        <button onclick="nextExercise()">Next Exercise</button>
+        <p id="setCount"></p>
+        <p id="muscleGroups"></p>
+        <p id="restCountdown" class="hidden"></p>
+        <button id="startExerciseButton" onclick="startExercise()">Start Exercise</button>
+        <button id="nextExerciseButton" class="hidden" onclick="nextExercise()">Next Exercise</button>
         <p>Routine Timer: <span id="routineTimer">00:00</span></p>
         <button onclick="endWorkout()">End Workout Early</button>
     </div>
@@ -76,8 +97,10 @@
     <script>
         let exercises = [];
         let currentExerciseIndex = 0;
+        let currentSet = 1;
         let workoutInterval;
         let routineStartTime;
+        let restInterval;
 
         document.getElementById("exerciseType").addEventListener("change", function() {
             const type = this.value;
@@ -87,11 +110,12 @@
 
         function addExercise() {
             const name = document.getElementById("exerciseName").value;
-            const muscle = document.getElementById("muscleGroup").value;
+            const primaryMuscle = document.getElementById("primaryMuscle").value;
+            const secondaryMuscle = document.getElementById("secondaryMuscle").value;
             const type = document.getElementById("exerciseType").value;
             const restTime = document.getElementById("restTime").value;
 
-            let exercise = { name, muscle, type, restTime };
+            let exercise = { name, primaryMuscle, secondaryMuscle, type, restTime };
 
             if (type === "sets") {
                 exercise.sets = document.getElementById("sets").value;
@@ -109,7 +133,7 @@
             list.innerHTML = "";
             exercises.forEach((exercise, index) => {
                 const li = document.createElement("li");
-                li.innerText = `${exercise.name} (${exercise.muscle}) - ${exercise.type === "sets" ? exercise.sets + " sets x " + exercise.reps + " reps" : "Time: " + exercise.time} - Rest: ${exercise.restTime}`;
+                li.innerText = `${exercise.name} - Primary: ${exercise.primaryMuscle}, Secondary: ${exercise.secondaryMuscle} - ${exercise.type === "sets" ? exercise.sets + " sets x " + exercise.reps + " reps" : "Time: " + exercise.time} - Rest: ${exercise.restTime}`;
                 list.appendChild(li);
             });
         }
@@ -130,42 +154,59 @@
         }
 
         function displayCurrentExercise() {
-            if (currentExerciseIndex >= exercises.length) {
-                endWorkout();
-                return;
-            }
-
             const exercise = exercises[currentExerciseIndex];
-            document.getElementById("currentExercise").innerText = `${exercise.name} (${exercise.muscle}) - ${exercise.type === "sets" ? exercise.sets + " sets x " + exercise.reps + " reps" : "Time: " + exercise.time}`;
+            document.getElementById("currentExercise").innerText = `${exercise.name}`;
+            document.getElementById("setCount").innerText = exercise.type === "sets" ? `Set ${currentSet} of ${exercise.sets}` : `Time: ${exercise.time}`;
+            document.getElementById("muscleGroups").innerText = `Primary Muscle: ${exercise.primaryMuscle}, Secondary Muscle: ${exercise.secondaryMuscle}`;
+            document.getElementById("startExerciseButton").classList.toggle("hidden", exercise.type === "sets");
+            document.getElementById("nextExerciseButton").classList.add("hidden");
+        }
+
+        function startExercise() {
+            const exercise = exercises[currentExerciseIndex];
+            if (exercise.type === "time") {
+                let [minutes, seconds] = exercise.time.split(":").map(Number);
+                let duration = minutes * 60 + seconds;
+                let countdown = setInterval(() => {
+                    if (duration <= 0) {
+                        clearInterval(countdown);
+                        startRest();
+                    } else {
+                        duration--;
+                        document.getElementById("setCount").innerText = `Time Left: ${String(Math.floor(duration / 60)).padStart(2, "0")}:${String(duration % 60).padStart(2, "0")}`;
+                    }
+                }, 1000);
+            } else {
+                document.getElementById("nextExerciseButton").classList.remove("hidden");
+            }
         }
 
         function nextExercise() {
-            if (currentExerciseIndex < exercises.length - 1) {
-                currentExerciseIndex++;
+            if (currentSet < exercises[currentExerciseIndex].sets) {
+                currentSet++;
                 displayCurrentExercise();
             } else {
-                endWorkout();
+                currentSet = 1;
+                currentExerciseIndex++;
+                if (currentExerciseIndex < exercises.length) {
+                    startRest();
+                } else {
+                    endWorkout();
+                }
             }
         }
 
-        function startRoutineTimer() {
-            workoutInterval = setInterval(() => {
-                const elapsed = Date.now() - routineStartTime;
-                const minutes = Math.floor(elapsed / 60000).toString().padStart(2, "0");
-                const seconds = Math.floor((elapsed % 60000) / 1000).toString().padStart(2, "0");
-                document.getElementById("routineTimer").innerText = `${minutes}:${seconds}`;
-            }, 1000);
-        }
+        function startRest() {
+            const restTime = exercises[currentExerciseIndex].restTime.split(":");
+            let restDuration = parseInt(restTime[0]) * 60 + parseInt(restTime[1]);
 
-        function endWorkout() {
-            clearInterval(workoutInterval);
-            alert("Workout completed!");
-            document.getElementById("workout-display").classList.add("hidden");
-            document.getElementById("routine-creation").classList.remove("hidden");
-            currentExerciseIndex = 0;
-            exercises = [];
-            displayExercises();
-        }
-    </script>
-</body>
-</html>
+            document.getElementById("restCountdown").classList.remove("hidden");
+            document.getElementById("restCountdown").innerText = `Resting for: ${restTime.join(":")}`;
+            restInterval = setInterval(() => {
+                if (restDuration <= 0) {
+                    clearInterval(restInterval);
+                    document.getElementById("restCountdown").classList.add("hidden");
+                    displayCurrentExercise();
+                } else {
+                    restDuration--;
+                    document.getElementById("restCountdown").innerText = `Resting for: ${
