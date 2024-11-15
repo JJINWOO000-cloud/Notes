@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Saved Workout Routine</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; }
+    h1 { color: #333; }
+    h2 { color: #666; }
+    .exercise { margin-bottom: 15px; }
+  </style>
+</head>
+<body>
+
+  <h1>Workout Routine Summary</h1>
+  
+  <!-- Routine Details -->
+  <div>
+    <h2>Routine Name: <span id="routineName">Routine Name Placeholder</span></h2>
+    <p><strong>Total Duration:</strong> <span id="totalDuration">00:00</span></p>
+  </div>
+  
+  <h2>Exercises Performed</h2>
+  <div id="exerciseList">
+    <!-- Placeholder for Exercises -->
+    <div class="exercise">
+      <p><strong>Exercise Name:</strong> <span class="exercise-name">Exercise Name Placeholder</span></p>
+      <p><strong>Sets:</strong> <span class="sets">0</span></p>
+      <p><strong>Reps/Time:</strong> <span class="repsOrTime">Reps/Time Placeholder</span></p>
+      <p><strong>Muscles Worked:</strong> <span class="muscles">Muscles Placeholder</span></p>
+    </div>
+  </div>
+
+  <script>
+    // Example data; this would be replaced dynamically by JavaScript upon saving the workout
+    const routineData = {
+      routineName: "Morning Full Body Routine",
+      totalDuration: "25:30",
+      exercises: [
+        {
+          name: "Push-Ups",
+          sets: 3,
+          repsOrTime: "15 reps",
+          muscles: "Chest, Triceps, Shoulders"
+        },
+        {
+          name: "Plank",
+          sets: 3,
+          repsOrTime: "00:30",
+          muscles: "Core"
+        },
+        {
+          name: "Squats",
+          sets: 3,
+          repsOrTime: "20 reps",
+          muscles: "Legs, Glutes"
+        }
+      ]
+    };
+
+    // Populate HTML with data from the routineData object
+    document.getElementById("routineName").textContent = routineData.routineName;
+    document.getElementById("totalDuration").textContent = routineData.totalDuration;
+
+    // Render exercise list
+    const exerciseListContainer = document.getElementById("exerciseList");
+    exerciseListContainer.innerHTML = ''; // Clear any placeholders
+    routineData.exercises.forEach(exercise => {
+      const exerciseDiv = document.createElement("div");
+      exerciseDiv.classList.add("exercise");
+      exerciseDiv.innerHTML = `
+        <p><strong>Exercise Name:</strong> ${exercise.name}</p>
+        <p><strong>Sets:</strong> ${exercise.sets}</p>
+        <p><strong>Reps/Time:</strong> ${exercise.repsOrTime}</p>
+        <p><strong>Muscles Worked:</strong> ${exercise.muscles}</p>
+      `;
+      exerciseListContainer.appendChild(exerciseDiv);
+    });
+  </script>
+
+</body>
+</html>
