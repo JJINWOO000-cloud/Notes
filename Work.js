@@ -101,6 +101,7 @@ function displayCurrentExercise() {
     document.getElementById("muscleGroups").innerText = `Primary Muscle: ${exercise.primaryMuscle}, Secondary Muscles: ${exercise.secondaryMuscles.join(", ")}`;
     document.getElementById("startExerciseButton").classList.toggle("hidden", exercise.type === "sets");
     document.getElementById("nextExerciseButton").classList.add("hidden");
+    document.getElementById("finishWorkoutButton").classList.add("hidden");
 }
 
 // Start the exercise (time-based or sets)
@@ -119,57 +120,73 @@ function startExercise() {
             }
         }, 1000);
     } else {
-        document.getElementById("nextExerciseButton").classList.remove("hidden");
+        startSet();
     }
 }
 
-// Move to the next set or exercise
+// Handle rest period between sets or exercises
+function startRest() {
+    const exercise = workoutData[currentExerciseIndex];
+    document.getElementById("restCountdown").classList.remove("hidden");
+    let [minutes, seconds] = exercise.restTime.split(":").map(Number);
+    let restTime = minutes * 60 + seconds;
+    restInterval = setInterval(() => {
+        if (restTime <= 0) {
+            clearInterval(restInterval);
+            nextExercise();
+        } else {
+            restTime--;
+            document.getElementById("restCountdown").innerText = `Rest Time Left: ${String(Math.floor(restTime / 60)).padStart(2, "0")}:${String(restTime % 60).padStart(2, "0")}`;
+        }
+    }, 1000);
+}
+
+// Move to next exercise or set
 function nextExercise() {
     const exercise = workoutData[currentExerciseIndex];
     if (exercise.type === "sets" && currentSet < exercise.sets) {
         currentSet++;
-        displayCurrentExercise();
+        startExercise();
     } else {
-        currentSet = 1;
         currentExerciseIndex++;
+        currentSet = 1;
         if (currentExerciseIndex < workoutData.length) {
-            startRest();
+            displayCurrentExercise();
         } else {
-            endWorkout();
+            finishWorkout();
         }
     }
 }
 
-// Start rest period after exercise
-function startRest() {
-    const exercise = workoutData[currentExerciseIndex];
-    clearInterval(restInterval);
-    document.getElementById("restCountdown").classList.remove("hidden");
-    let [minutes, seconds] = exercise.restTime.split(":").map(Number);
-    let duration = minutes * 60 + seconds;
-
-    restInterval = setInterval(() => {
-        if (duration <= 0) {
-            clearInterval(restInterval);
-            nextExercise();
-        } else {
-            duration--;
-            document.getElementById("restCountdown").innerText = `Rest Time: ${String(Math.floor(duration / 60)).padStart(2, "0")}:${String(duration % 60).padStart(2, "0")}`;
-        }
-    }, 1000);
+// Finish workout
+function finishWorkout() {
+    alert("Workout completed!");
+    resetWorkout();
 }
 
-// End the workout early
-function endWorkout() {
-    clearInterval(workoutInterval);
+// Reset workout
+function resetWorkout() {
+    currentExerciseIndex = 0;
+    currentSet = 1;
+    workoutData = [];
+    document.getElementById("routine-creation").classList.remove("hidden");
     document.getElementById("workout-display").classList.add("hidden");
-    alert("Workout ended!");
+    displayExercises();
 }
 
-// Routine timer update
+// Start routine timer
 function startRoutineTimer() {
     workoutInterval = setInterval(() => {
-        const elapsed = Date.now() - routineStartTime;
-        document.getElementById("routineTimer").innerText = `${String(Math.floor(elapsed / 60000)).padStart(2, "0")}:${String(Math.floor((elapsed % 60000) / 1000)).padStart(2, "0")}`;
+        const timeElapsed = Math.floor((Date.now() - routineStartTime) / 1000);
+        const minutes = Math.floor(timeElapsed / 60);
+        const seconds = timeElapsed % 60;
+        document.getElementById("routineTimer").innerText = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
     }, 1000);
+}
+
+// End workout early
+function endWorkout() {
+    clearInterval(workoutInterval);
+    clearInterval(restInterval);
+    resetWorkout();
 }
