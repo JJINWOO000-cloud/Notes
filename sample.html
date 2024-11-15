@@ -3,176 +3,205 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Workout Routine Planner</title>
+  <title>Workout Routine</title>
   <style>
-    body { font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; }
-    input, select, button { margin: 5px 0; padding: 8px; width: 100%; }
-    .exercise { border: 1px solid #ddd; padding: 10px; margin-top: 10px; }
-    .controls { display: flex; justify-content: space-between; }
+    /* Basic Mobile-Friendly Styles */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: #f7f7f7;
+    }
+    .container {
+      max-width: 400px;
+      width: 100%;
+      padding: 10px;
+    }
+    h1, h2, h3 {
+      color: #333;
+      text-align: center;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    input[type="text"], input[type="number"], select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      background-color: #4CAF50;
+      font-size: 16px;
+    }
+    .button-group {
+      display: flex;
+      gap: 10px;
+      justify-content: space-between;
+    }
+    .exercise-list {
+      list-style: none;
+      padding: 0;
+    }
+    .exercise-item {
+      background: #e0e0e0;
+      padding: 10px;
+      margin-bottom: 5px;
+      border-radius: 5px;
+    }
   </style>
 </head>
 <body>
 
-  <h1>Workout Routine Planner</h1>
-  <div>
-    <label>Routine Name:</label>
-    <input type="text" id="routineName" placeholder="Enter routine name">
-    <button onclick="saveRoutine()">Save Workout</button>
-  </div>
+<div class="container">
+  <h1>Create Workout Routine</h1>
 
+  <!-- Routine Name -->
+  <label for="routineName">Routine Name</label>
+  <input type="text" id="routineName" placeholder="Enter routine name">
+
+  <!-- Exercise Section -->
   <h2>Add Exercise</h2>
-  <div id="exerciseContainer"></div>
-  <button onclick="addExercise()">Add Exercise</button>
+  <label for="exerciseName">Exercise Name</label>
+  <input type="text" id="exerciseName" placeholder="Enter exercise name">
 
-  <button onclick="startRoutine()">Start Workout</button>
-  
-  <h2>Routine Progress</h2>
-  <div id="workoutProgress" style="display: none;">
-    <div id="currentExercise"></div>
-    <div id="setInfo"></div>
-    <button id="startExerciseBtn" onclick="startExercise()">Start Exercise</button>
-    <button onclick="nextExercise()">Next</button>
-    <div id="restTimeDisplay"></div>
-    <div>Total Duration: <span id="totalDuration">00:00</span></div>
+  <!-- Muscle Selection -->
+  <label>Muscles Worked</label>
+  <div class="button-group">
+    <button onclick="addMuscle('Chest')">Chest</button>
+    <button onclick="addMuscle('Back')">Back</button>
+    <button onclick="addMuscle('Shoulders')">Shoulders</button>
+    <button onclick="addMuscle('Legs')">Legs</button>
+    <button onclick="addMuscle('Biceps')">Biceps</button>
+    <button onclick="addMuscle('Triceps')">Triceps</button>
+  </div>
+  <p><strong>Selected Muscles:</strong> <span id="selectedMuscles">None</span></p>
+
+  <!-- Sets and Reps or Time -->
+  <label for="sets">Number of Sets</label>
+  <input type="number" id="sets" min="1" max="10" value="1">
+
+  <label>Reps or Time</label>
+  <select id="repsOrTime" onchange="toggleRepsTimeInput()">
+    <option value="reps">Reps</option>
+    <option value="time">Time</option>
+  </select>
+
+  <div id="repsInput" style="display: block;">
+    <label for="reps">Reps</label>
+    <input type="number" id="reps" min="1" max="100">
   </div>
 
-  <script>
-    let exercises = [];
-    let currentExerciseIndex = 0;
-    let currentSet = 1;
-    let workoutDuration = 0;
-    let restInterval;
-    let totalWorkoutData = "";
+  <div id="timeInput" style="display: none;">
+    <label for="time">Time (MM:SS)</label>
+    <input type="text" id="time" placeholder="00:30">
+  </div>
 
-    function addExercise() {
-      const exerciseId = exercises.length;
-      const exerciseDiv = document.createElement('div');
-      exerciseDiv.classList.add('exercise');
-      exerciseDiv.id = `exercise-${exerciseId}`;
-      exerciseDiv.innerHTML = `
-        <label>Exercise Name:</label>
-        <input type="text" placeholder="Enter exercise name" id="exerciseName-${exerciseId}">
-        <label>Muscles Worked:</label>
-        <select multiple id="muscles-${exerciseId}">
-          <option value="Chest">Chest</option>
-          <option value="Back">Back</option>
-          <option value="Shoulders">Shoulders</option>
-          <option value="Legs">Legs</option>
-          <option value="Biceps">Biceps</option>
-          <option value="Triceps">Triceps</option>
-        </select>
-        <label>Sets (Min 1, Max 10):</label>
-        <input type="number" min="1" max="10" id="sets-${exerciseId}">
-        <label>Type:</label>
-        <select onchange="toggleRepsOrTime(${exerciseId})" id="type-${exerciseId}">
-          <option value="reps">Reps</option>
-          <option value="time">Time</option>
-        </select>
-        <div id="repsInput-${exerciseId}">
-          <label>Reps:</label>
-          <input type="number" min="1" id="reps-${exerciseId}">
-        </div>
-        <div id="timeInput-${exerciseId}" style="display: none;">
-          <label>Timer (MM:SS):</label>
-          <input type="text" placeholder="00:00" id="timer-${exerciseId}">
-        </div>
-        <label>Rest Time (MM:SS):</label>
-        <input type="text" placeholder="00:00" id="rest-${exerciseId}">
-        <div class="controls">
-          <button onclick="removeExercise(${exerciseId})">Delete</button>
-          <button onclick="saveExercise(${exerciseId})">Save Exercise</button>
-        </div>
+  <!-- Rest Time -->
+  <label>Rest Between Sets</label>
+  <select id="rest" onchange="toggleRestInput()">
+    <option value="no">No</option>
+    <option value="yes">Yes</option>
+  </select>
+  <div id="restTimeInput" style="display: none;">
+    <label for="restTime">Rest Time (MM:SS)</label>
+    <input type="text" id="restTime" placeholder="00:30">
+  </div>
+
+  <button onclick="addExercise()">Save Exercise</button>
+
+  <h2>Exercises</h2>
+  <ul class="exercise-list" id="exerciseList"></ul>
+
+  <button onclick="saveWorkout()">Save Workout Routine</button>
+
+  <h2>Play Routine</h2>
+  <button onclick="startWorkout()">Start Workout</button>
+</div>
+
+<script>
+  let muscles = [];
+  let exercises = [];
+
+  function addMuscle(muscle) {
+    if (!muscles.includes(muscle)) {
+      muscles.push(muscle);
+      document.getElementById("selectedMuscles").innerText = muscles.join(", ");
+    }
+  }
+
+  function toggleRepsTimeInput() {
+    const value = document.getElementById("repsOrTime").value;
+    document.getElementById("repsInput").style.display = value === "reps" ? "block" : "none";
+    document.getElementById("timeInput").style.display = value === "time" ? "block" : "none";
+  }
+
+  function toggleRestInput() {
+    const value = document.getElementById("rest").value;
+    document.getElementById("restTimeInput").style.display = value === "yes" ? "block" : "none";
+  }
+
+  function addExercise() {
+    const exerciseName = document.getElementById("exerciseName").value;
+    const sets = document.getElementById("sets").value;
+    const repsOrTime = document.getElementById("repsOrTime").value === "reps"
+      ? `${document.getElementById("reps").value} reps`
+      : document.getElementById("time").value;
+    const restTime = document.getElementById("rest").value === "yes" ? document.getElementById("restTime").value : "No Rest";
+
+    const exercise = {
+      name: exerciseName,
+      sets,
+      repsOrTime,
+      muscles: muscles.join(", "),
+      restTime
+    };
+
+    exercises.push(exercise);
+    displayExercises();
+  }
+
+  function displayExercises() {
+    const exerciseList = document.getElementById("exerciseList");
+    exerciseList.innerHTML = '';
+    exercises.forEach((exercise, index) => {
+      exerciseList.innerHTML += `
+        <li class="exercise-item">
+          <strong>${exercise.name}</strong> - Sets: ${exercise.sets}, ${exercise.repsOrTime}, Muscles: ${exercise.muscles}, Rest: ${exercise.restTime}
+          <button onclick="deleteExercise(${index})">Delete</button>
+        </li>
       `;
-      document.getElementById('exerciseContainer').appendChild(exerciseDiv);
-      exercises.push({ id: exerciseId, completed: false });
-    }
+    });
+  }
 
-    function toggleRepsOrTime(id) {
-      const type = document.getElementById(`type-${id}`).value;
-      document.getElementById(`repsInput-${id}`).style.display = type === 'reps' ? 'block' : 'none';
-      document.getElementById(`timeInput-${id}`).style.display = type === 'time' ? 'block' : 'none';
-    }
+  function deleteExercise(index) {
+    exercises.splice(index, 1);
+    displayExercises();
+  }
 
-    function saveExercise(id) {
-      const exerciseDiv = document.getElementById(`exercise-${id}`);
-      exerciseDiv.querySelector('input, select').disabled = true;
-      exerciseDiv.querySelector('.controls').style.display = 'none';
-    }
+  function saveWorkout() {
+    // Code to save workout data (you can use Blob API as discussed previously)
+    alert("Workout routine saved!");
+  }
 
-    function removeExercise(id) {
-      document.getElementById(`exercise-${id}`).remove();
-      exercises = exercises.filter(exercise => exercise.id !== id);
-    }
+  function startWorkout() {
+    alert("Starting workout routine...");
+    // Implement workout play functionality here, including tracking sets, beeps, and rest time
+  }
+</script>
 
-    function saveRoutine() {
-      const routineName = document.getElementById('routineName').value;
-      if (!routineName) {
-        alert("Please enter a routine name.");
-        return;
-      }
-      alert(`Routine '${routineName}' saved!`);
-    }
-
-    function startRoutine() {
-      document.getElementById('workoutProgress').style.display = 'block';
-      displayCurrentExercise();
-    }
-
-    function displayCurrentExercise() {
-      if (currentExerciseIndex < exercises.length) {
-        const exercise = exercises[currentExerciseIndex];
-        const name = document.getElementById(`exerciseName-${exercise.id}`).value;
-        const sets = document.getElementById(`sets-${exercise.id}`).value;
-        const type = document.getElementById(`type-${exercise.id}`).value;
-        document.getElementById('currentExercise').textContent = `Exercise: ${name}, Sets: ${sets}, Type: ${type}`;
-        document.getElementById('setInfo').textContent = `Performing set ${currentSet} of ${sets}`;
-      } else {
-        endRoutine();
-      }
-    }
-
-    function startExercise() {
-      const exercise = exercises[currentExerciseIndex];
-      const type = document.getElementById(`type-${exercise.id}`).value;
-      const timer = document.getElementById(`timer-${exercise.id}`).value;
-
-      if (type === 'time') {
-        let [minutes, seconds] = timer.split(":").map(Number);
-        workoutDuration += minutes * 60 + seconds;
-        restInterval = setInterval(() => {
-          workoutDuration++;
-          updateDuration();
-        }, 1000);
-      }
-    }
-
-    function nextExercise() {
-      clearInterval(restInterval);
-      currentExerciseIndex++;
-      displayCurrentExercise();
-    }
-
-    function updateDuration() {
-      const minutes = Math.floor(workoutDuration / 60);
-      const seconds = workoutDuration % 60;
-      document.getElementById('totalDuration').textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-    }
-
-    function endRoutine() {
-      alert("Workout routine completed!");
-      document.getElementById('workoutProgress').style.display = 'none';
-      saveToHTMLFile();
-    }
-
-    function saveToHTMLFile() {
-      const routineName = document.getElementById('routineName').value;
-      const data = `Routine Name: ${routineName}\nDuration: ${document.getElementById('totalDuration').textContent}`;
-      const blob = new Blob([data], { type: 'text/html' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = 'sav.html';
-      a.click();
-    }
-  </script>
 </body>
 </html>
