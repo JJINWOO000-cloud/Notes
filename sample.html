@@ -214,9 +214,7 @@
                 if (restDuration <= 0) {
                     clearInterval(restInterval);
                     displayCurrentExercise();
-                    if (workoutData[currentExerciseIndex].type === "sets") {
-                        document.getElementById("nextExerciseButton").classList.remove("hidden");
-                    }
+                    document.getElementById("nextExerciseButton").classList.remove("hidden");
                 } else {
                     restDuration--;
                     document.getElementById("restCountdown").innerText = `Resting for: ${String(Math.floor(restDuration / 60)).padStart(2, "0")}:${String(restDuration % 60).padStart(2, "0")}`;
