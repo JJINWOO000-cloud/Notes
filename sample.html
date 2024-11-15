@@ -95,22 +95,35 @@
     </div>
 
     <script>
-        let workoutData = []; // Array to hold all exercises
-        let currentExerciseIndex = 0; // Track the current exercise index
-        let currentSet = 1; // Track the current set index
+        let workoutData = [];
+        let currentExerciseIndex = 0;
+        let currentSet = 1;
         let workoutInterval;
         let routineStartTime;
         let restInterval;
 
-        // Update input visibility based on exercise type
+        // Toggle input visibility based on exercise type
         document.getElementById("exerciseType").addEventListener("change", function() {
             const type = this.value;
             document.getElementById("setsInput").classList.toggle("hidden", type !== "sets");
             document.getElementById("timeInput").classList.toggle("hidden", type !== "time");
         });
 
-        // Function to add an exercise to the workout plan
+        // Validate input fields
+        function validateInput() {
+            const name = document.getElementById("exerciseName").value;
+            if (!name) {
+                alert("Please enter an exercise name.");
+                return false;
+            }
+
+            return true;
+        }
+
+        // Function to add exercise to workout plan
         function addExercise() {
+            if (!validateInput()) return;
+
             const name = document.getElementById("exerciseName").value;
             const primaryMuscle = document.getElementById("primaryMuscle").value;
             const secondaryMuscle = document.getElementById("secondaryMuscle").value;
@@ -130,7 +143,7 @@
             displayExercises();
         }
 
-        // Display the list of exercises added
+        // Display added exercises
         function displayExercises() {
             const list = document.getElementById("exerciseList");
             list.innerHTML = "";
@@ -141,7 +154,7 @@
             });
         }
 
-        // Start the workout routine
+        // Start the workout
         function startWorkout() {
             if (!workoutData.length) {
                 alert("Please add at least one exercise.");
@@ -157,7 +170,7 @@
             startRoutineTimer();
         }
 
-        // Display the current exercise
+        // Display current exercise details
         function displayCurrentExercise() {
             const exercise = workoutData[currentExerciseIndex];
             document.getElementById("currentExercise").innerText = `${exercise.name}`;
@@ -167,7 +180,7 @@
             document.getElementById("nextExerciseButton").classList.add("hidden");
         }
 
-        // Start the current exercise (time-based or sets)
+        // Start the exercise (time-based or sets)
         function startExercise() {
             const exercise = workoutData[currentExerciseIndex];
             if (exercise.type === "time") {
@@ -194,7 +207,7 @@
                 currentSet++;
                 displayCurrentExercise();
             } else {
-                currentSet = 1; // Reset set to 1
+                currentSet = 1;
                 currentExerciseIndex++;
                 if (currentExerciseIndex < workoutData.length) {
                     startRest();
@@ -204,39 +217,38 @@
             }
         }
 
-        // Start the rest time after completing a set or time exercise
+        // Start rest period after exercise
         function startRest() {
-            const restTime = workoutData[currentExerciseIndex].restTime.split(":");
-            let restDuration = parseInt(restTime[0]) * 60 + parseInt(restTime[1]);
-
+            const exercise = workoutData[currentExerciseIndex];
+            clearInterval(restInterval);
             document.getElementById("restCountdown").classList.remove("hidden");
-            const restInterval = setInterval(() => {
-                if (restDuration <= 0) {
-                    clearInterval(restInterval);
-                    displayCurrentExercise();
-                    document.getElementById("nextExerciseButton").classList.remove("hidden");
-                } else {
-                    restDuration--;
-                    document.getElementById("restCountdown").innerText = `Resting for: ${String(Math.floor(restDuration / 60)).padStart(2, "0")}:${String(restDuration % 60).padStart(2, "0")}`;
-                }
-            }, 1000);
-        }
+            let [minutes, seconds] = exercise.restTime.split(":").map(Number);
+            let duration = minutes * 60 + seconds;
 
-        // Start the workout timer
-        function startRoutineTimer() {
-            workoutInterval = setInterval(() => {
-                const elapsedTime = Math.floor((Date.now() - routineStartTime) / 1000);
-                document.getElementById("routineTimer").innerText = `${String(Math.floor(elapsedTime / 60)).padStart(2, "0")}:${String(elapsedTime % 60).padStart(2, "0")}`;
+            restInterval = setInterval(() => {
+                if (duration <= 0) {
+                    clearInterval(restInterval);
+                    nextExercise();
+                } else {
+                    duration--;
+                    document.getElementById("restCountdown").innerText = `Rest Time: ${String(Math.floor(duration / 60)).padStart(2, "0")}:${String(duration % 60).padStart(2, "0")}`;
+                }
             }, 1000);
         }
 
         // End the workout early
         function endWorkout() {
             clearInterval(workoutInterval);
-            clearInterval(restInterval);
-            alert("Workout Completed!");
-            document.getElementById("routine-creation").classList.remove("hidden");
             document.getElementById("workout-display").classList.add("hidden");
+            alert("Workout ended!");
+        }
+
+        // Routine timer update
+        function startRoutineTimer() {
+            workoutInterval = setInterval(() => {
+                const elapsed = Date.now() - routineStartTime;
+                document.getElementById("routineTimer").innerText = `${String(Math.floor(elapsed / 60000)).padStart(2, "0")}:${String(Math.floor((elapsed % 60000) / 1000)).padStart(2, "0")}`;
+            }, 1000);
         }
     </script>
 </body>
