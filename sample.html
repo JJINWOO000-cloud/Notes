@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -90,7 +89,7 @@
         <p id="muscleGroups"></p>
         <p id="restCountdown" class="hidden"></p>
         <button id="startExerciseButton" onclick="startExercise()">Start Exercise</button>
-        <button id="nextExerciseButton" class="hidden" onclick="nextExercise()">Next Exercise</button>
+        <button id="nextExerciseButton" class="hidden" onclick="nextExercise()">Next Exercise / Set</button>
         <p>Routine Timer: <span id="routineTimer">00:00</span></p>
         <button onclick="endWorkout()">End Workout Early</button>
     </div>
@@ -211,11 +210,13 @@
             let restDuration = parseInt(restTime[0]) * 60 + parseInt(restTime[1]);
 
             document.getElementById("restCountdown").classList.remove("hidden");
-            document.getElementById("restCountdown").innerText = `Resting for: ${restTime.join(":")}`;
-            restInterval = setInterval(() => {
+            const restInterval = setInterval(() => {
                 if (restDuration <= 0) {
                     clearInterval(restInterval);
                     displayCurrentExercise();
+                    if (workoutData[currentExerciseIndex].type === "sets") {
+                        document.getElementById("nextExerciseButton").classList.remove("hidden");
+                    }
                 } else {
                     restDuration--;
                     document.getElementById("restCountdown").innerText = `Resting for: ${String(Math.floor(restDuration / 60)).padStart(2, "0")}:${String(restDuration % 60).padStart(2, "0")}`;
@@ -223,7 +224,7 @@
             }, 1000);
         }
 
-        // Start the workout routine timer
+        // Start the workout timer
         function startRoutineTimer() {
             workoutInterval = setInterval(() => {
                 const elapsedTime = Math.floor((Date.now() - routineStartTime) / 1000);
