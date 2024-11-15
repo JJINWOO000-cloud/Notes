@@ -29,6 +29,7 @@
   <h2>Routine Progress</h2>
   <div id="workoutProgress" style="display: none;">
     <div id="currentExercise"></div>
+    <div id="setInfo"></div>
     <button id="startExerciseBtn" onclick="startExercise()">Start Exercise</button>
     <button onclick="nextExercise()">Next</button>
     <div id="restTimeDisplay"></div>
@@ -38,8 +39,10 @@
   <script>
     let exercises = [];
     let currentExerciseIndex = 0;
+    let currentSet = 1;
     let workoutDuration = 0;
     let restInterval;
+    let totalWorkoutData = "";
 
     function addExercise() {
       const exerciseId = exercises.length;
@@ -77,6 +80,7 @@
         <input type="text" placeholder="00:00" id="rest-${exerciseId}">
         <div class="controls">
           <button onclick="removeExercise(${exerciseId})">Delete</button>
+          <button onclick="saveExercise(${exerciseId})">Save Exercise</button>
         </div>
       `;
       document.getElementById('exerciseContainer').appendChild(exerciseDiv);
@@ -87,6 +91,12 @@
       const type = document.getElementById(`type-${id}`).value;
       document.getElementById(`repsInput-${id}`).style.display = type === 'reps' ? 'block' : 'none';
       document.getElementById(`timeInput-${id}`).style.display = type === 'time' ? 'block' : 'none';
+    }
+
+    function saveExercise(id) {
+      const exerciseDiv = document.getElementById(`exercise-${id}`);
+      exerciseDiv.querySelector('input, select').disabled = true;
+      exerciseDiv.querySelector('.controls').style.display = 'none';
     }
 
     function removeExercise(id) {
@@ -115,6 +125,7 @@
         const sets = document.getElementById(`sets-${exercise.id}`).value;
         const type = document.getElementById(`type-${exercise.id}`).value;
         document.getElementById('currentExercise').textContent = `Exercise: ${name}, Sets: ${sets}, Type: ${type}`;
+        document.getElementById('setInfo').textContent = `Performing set ${currentSet} of ${sets}`;
       } else {
         endRoutine();
       }
@@ -150,6 +161,17 @@
     function endRoutine() {
       alert("Workout routine completed!");
       document.getElementById('workoutProgress').style.display = 'none';
+      saveToHTMLFile();
+    }
+
+    function saveToHTMLFile() {
+      const routineName = document.getElementById('routineName').value;
+      const data = `Routine Name: ${routineName}\nDuration: ${document.getElementById('totalDuration').textContent}`;
+      const blob = new Blob([data], { type: 'text/html' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'sav.html';
+      a.click();
     }
   </script>
 </body>
